@@ -2,9 +2,10 @@
 import requests
 import re
 import sys
-from bs4 import BeautifulSoup
+import os
+from pathlib import Path
 
-def retrieve_gutenberg_text(textID):
+def get_gutenberg_text(textID):
     try:
         res = requests.get(f'http://www.gutenberg.org/files/{textID!r}/{textID!r}-0.txt')
         res.raise_for_status()
@@ -25,19 +26,27 @@ def remove_text_padding(playText):
         print(f'Could not remove text padding: {exc!r}')
     return playText
 
-#TODO: Repeat (loop?) data retrieval for several Shakespeare works
-textID = 1513  #Romeo and Juliet for testing; ID is variable instead of full URL because Gutenberg's simple URL structure makes it a simple replacement
-res = retrieve_gutenberg_text(textID)
-playText = remove_text_padding(res.text)
+#textID = 1513  #Romeo and Juliet for testing; Currently reading from file due to Project Gutenberg's stance on web scraping.
+#res = get_gutenberg_text(textID)
+allWorks = open('ShakespeareCompleteWorks.txt', encoding='utf8')
+allText = allWorks.read()
+playText = remove_text_padding(allText)
 
-#For debugging purposes
-start, end = playText[:100], playText[-100:]
-print(f'Final text begins "{start!r}" \nand ends {end!r}"')
+#table of contents to create list of works
+contentStart = playText.find('THE SONNETS')
+contentEnd = playText.find('ADONIS') + len('ADONIS')
+toc = playText[contentStart : contentEnd]   
+tocList = list(toc.split('                 '))
+tocList = tocList[0::2]
 
-#Very simple test case with constants rather than proper regexes. Was used for proof of concept.
-# rjRegex = re.compile(r'Romeo')
-# searchFor = '"Romeo"'
-# rjBeginIndex = res.text.find('ACT I')
-# rjEndIndex = res.text.find('THE END')
-# occurences = rjRegex.findall(res.text[rjBeginIndex:rjEndIndex])
-# print('There are %s occurences of %s in the text.' % (str(len(occurences)), searchFor))
+
+
+
+# #testing using beautifulsoup to get multiple titles from Shakespeare's author pages
+# #TODO: Repeat process for pageIndex +=25 (start_index=26, start_index=51, etc.) up to pageIndex = 326
+# pageIndex = 1
+# authorPage = 'https://www.gutenberg.org/ebooks/author/65?sort_order=title&start_index=' + str(pageIndex)
+# soup = get_URLs_from_author(authorPage)
+
+# #For debugging purposes
+print(tocList)
