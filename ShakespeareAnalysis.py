@@ -54,18 +54,11 @@ def remove_text_padding(unformatted_books):
         formatted_books.append([book[0], book_text])
     return formatted_books
 
+def compare_regex_instances(books, search_regex):
+    for book in books:
+        instances = len(search_regex.findall(book[1]))
+        print(f'{book_dict[book[0]]} contains {instances} instances of the words "murder" or "kill," including variations ("murdered," "killer," etc.)')
+
 unformatted_books = get_books_from_ids(book_dict.keys())    #List of lists formatted [book_dict key, book's Response object]
 books = remove_text_padding(unformatted_books)              #List of lists formatted [book_dict key, string containing book's text]
 search_regex = re.compile(r'[Mm]urder\w*\b | [Kk]ill\w*\b')
-for book in books:
-    instances = len(search_regex.findall(book[1]))
-    print(f'{book_dict[book[0]]} contains {instances} instances of the words "murder" or "kill," including variations ("murdered," "killer," etc.)')
-
-
-
-#Writing formatted books to files for debug/review
-# Path(Path.cwd()/'Formatted Texts').mkdir(exist_ok=True)
-# for i in range(len(book_dict)):
-#     title = list(book_dict.values())[i]
-#     p = Path('Formatted Texts/'+title+'.txt')
-#     p.write_text(books[i], encoding='utf-8')
