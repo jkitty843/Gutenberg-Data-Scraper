@@ -62,3 +62,4 @@ def compare_regex_instances(books, search_regex):
 unformatted_books = get_books_from_ids(book_dict.keys())    #List of lists formatted [book_dict key, book's Response object]
 books = remove_text_padding(unformatted_books)              #List of lists formatted [book_dict key, string containing book's text]
 search_regex = re.compile(r'[Mm]urder\w*\b | [Kk]ill\w*\b')
+compare_regex_instances(books, search_regex)
