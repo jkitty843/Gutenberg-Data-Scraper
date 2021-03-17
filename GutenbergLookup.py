@@ -14,15 +14,6 @@ import re
 import requests
 from pathlib import Path
 
-#Key = Gutenberg ID: Value = Title
-book_dict = {
-    1513: 'Romeo and Juliet',
-    1522: 'Julius Caesar',
-    1524: 'Hamlet',
-    1531: 'Othello',
-    1533: 'Macbeth'
-}
-
 def get_response_from_id(id):
     res = requests.get(f'http://www.gutenberg.org/files/{id}/{id}-0.txt')
     res.encoding = 'utf-8'
@@ -54,6 +45,7 @@ def trim_gutenberg_text(text):
         print(f'Could not remove text padding: {exc}')
     return trimmed_text
 
+#Optional remove_lines arg allows for optional analysis of linecounts, etc. True by default for simpler character analysis.
 def format_gutenberg_text(unformatted_books, remove_lines = True):
     formatted_books = []
     for book in unformatted_books:
@@ -64,12 +56,8 @@ def format_gutenberg_text(unformatted_books, remove_lines = True):
         formatted_books.append([book[0], book_text])
     return formatted_books
 
-def compare_regex_instances(books, search_regex):
+def compare_regex_instances(books, search_regex_string, book_dict):
+    search_regex = re.compile(search_regex_string)
     for book in books:
         instances = len(search_regex.findall(book[1]))
-        print(f'{book_dict[book[0]]} contains {instances} instances of the words "murder" or "kill," including variations ("murdered," "killer," etc.)')
-
-unformatted_books = get_books_from_id_list(book_dict.keys())    #List of lists formatted [book_dict key, book's Response object]
-books = format_gutenberg_text(unformatted_books)                #List of lists formatted [book_dict key, string containing book's text]
-search_regex = re.compile(r'[Mm]urder\w*\b | [Kk]ill\w*\b')
-compare_regex_instances(books, search_regex)
+        print(f'{book_dict[book[0]]} contains {instances} instances of the searched regex {search_regex_string}')
