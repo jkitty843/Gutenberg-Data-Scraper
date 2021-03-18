@@ -12,7 +12,29 @@
 
 import re
 import requests
+from bs4 import BeautifulSoup
 from pathlib import Path
+
+def get_titles_and_authors(titles_and_authors):
+    titles = []
+    authors = []
+    for ta in titles_and_authors:
+        titles.append(ta[0])
+        authors.append(ta[1])
+    return titles, authors
+
+def get_books_from_urls(urls):
+    responses = [requests.get(url) for url in urls]
+    soups = [BeautifulSoup(response.text, 'html.parser') for response in responses]
+    #get plain text files
+    href_tags = [soup.find(href=True, text='Plain Text UTF-8') for soup in soups]
+    book_urls = ['https://' +('www.gutenberg.org')+ tag.attrs['href'] for tag in href_tags]
+    #Get titles and authors
+    h1_tags = [soup.find('h1').getText() for soup in soups]
+    titles_and_authors = [re.split(r'by', tag) for tag in h1_tags]
+    titles, authors = get_titles_and_authors(titles_and_authors)
+    return book_urls, titles, authors
+
 
 def get_response_from_id(id):
     res = requests.get(f'http://www.gutenberg.org/files/{id}/{id}-0.txt')
