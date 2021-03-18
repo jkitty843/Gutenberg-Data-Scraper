@@ -39,18 +39,3 @@ def compare_regex_instances(books, search_regex_string, book_dict):
         result_string += (f'{book_dict[book[0]]} contains {instances} instances of the searched regex {search_regex_string}'+'\n')
         result_dict.update({book_dict[book[0]] : instances})
     return result_string, result_dict
-
-def get_entry_list(entry_box_list):
-    entry_list = []
-    for i in range(len(entry_box_list)):
-        entry_list.append(entry_box_list[i].get())
-    return entry_list
-
-def get_dict_from_entries(entry_list):
-    book_dict = {}
-    for i in range(0, len(entry_list), 2):
-        try:
-            book_dict.update({int(entry_list[i+1]) : str(entry_list[i])})
-        except ValueError:
-            break
-    return book_dict
