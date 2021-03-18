@@ -8,16 +8,17 @@ import json
 from datetime import date
 from tkinter import messagebox
 from pathlib import Path
-import GutenbergLookup as gb
+import GutenbergLookup as gbl
+import GutenbergFormatting as gbf
 
 #TODO: #1 This function does too much. Should split.
 def search_gutenberg(save = False):
-    entry_list = gb.get_entry_list(entry_box_list)
-    book_dict = gb.get_dict_from_entries(entry_list)   #book_dict has {bookID : 'Title'} format
-    unformatted_books = gb.get_books_from_id_list(book_dict.keys())     #List of lists formatted [book_dict key, book's Response object]
-    books = gb.format_gutenberg_text(unformatted_books)     #List of lists formatted [book_dict key, string containing book's text]
+    entry_list = gbl.get_entry_list(entry_box_list)
+    book_dict = gbl.get_dict_from_entries(entry_list)   #book_dict has {bookID : 'Title'} format
+    unformatted_books = gbl.get_books_from_id_list(book_dict.keys())     #List of lists formatted [book_dict key, book's Response object]
+    books = gbf.format_gutenberg_text(unformatted_books)     #List of lists formatted [book_dict key, string containing book's text]
     search_regex_string = regex_text.get('1.0', 'end-1c')  #'1.0' = line 1, char 1. end-1c = end - last char (a newline char)
-    results_text, results_dict = gb.compare_regex_instances(books, search_regex_string, book_dict)
+    results_text, results_dict = gbl.compare_regex_instances(books, search_regex_string, book_dict)
     if save:
         return results_dict
     return results_text
