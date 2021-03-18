@@ -5,6 +5,7 @@
 import os
 import tkinter as tk
 import json
+from datetime import date
 from tkinter import messagebox
 from pathlib import Path
 import GutenbergLookup as gb
@@ -29,7 +30,7 @@ def save_results():
     results_dict = search_gutenberg(save = True)
     results_json = json.dumps(results_dict)
     Path(Path.cwd() / 'Saved Results').mkdir(exist_ok=True)
-    result_file = Path('Saved Results') / ('Results '+entry_box_list[0].get()+'.txt')
+    result_file = Path('Saved Results') / ('Results %s.txt' % str(date.today()))
     result_file.write_text(results_json)
     messagebox.showinfo(title = 'Search complete', message = 'File saved successfully.')
     
