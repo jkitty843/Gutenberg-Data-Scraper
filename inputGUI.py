@@ -5,16 +5,32 @@
 import os
 import tkinter as tk
 import json
-from datetime import date
+from datetime import datetime
 from tkinter import messagebox
 from pathlib import Path
 import GutenbergLookup as gbl
 import GutenbergFormatting as gbf
 
 #TODO: #1 This function does too much. Should split.
+
+def get_entry_list():
+    entry_list = []
+    for i in range(len(entry_box_list)):
+        entry_list.append(entry_box_list[i].get())
+    return entry_list
+
+def get_dict_from_entries(entry_list):
+    book_dict = {}
+    for i in range(0, len(entry_list), 2):
+        try:
+            book_dict.update({int(entry_list[i+1]) : str(entry_list[i])})
+        except ValueError:
+            break
+    return book_dict
+
 def search_gutenberg(save = False):
-    entry_list = gbl.get_entry_list(entry_box_list)
-    book_dict = gbl.get_dict_from_entries(entry_list)   #book_dict has {bookID : 'Title'} format
+    entry_list = get_entry_list()
+    book_dict = get_dict_from_entries(entry_list)   #book_dict has {bookID : 'Title'} format
     unformatted_books = gbl.get_books_from_id_list(book_dict.keys())     #List of lists formatted [book_dict key, book's Response object]
     books = gbf.format_gutenberg_text(unformatted_books)     #List of lists formatted [book_dict key, string containing book's text]
     search_regex_string = regex_text.get('1.0', 'end-1c')  #'1.0' = line 1, char 1. end-1c = end - last char (a newline char)
@@ -31,7 +47,7 @@ def save_results():
     results_dict = search_gutenberg(save = True)
     results_json = json.dumps(results_dict)
     Path(Path.cwd() / 'Saved Results').mkdir(exist_ok=True)
-    result_file = Path('Saved Results') / ('Results %s.txt' % str(date.today()))
+    result_file = Path('Saved Results') / ('Results %s.txt' % str(datetime.today().strftime('%Y-%m-%d_%H-%M-%S')))
     result_file.write_text(results_json)
     messagebox.showinfo(title = 'Search complete', message = 'File saved successfully.')
     
